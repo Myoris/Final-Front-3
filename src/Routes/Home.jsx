@@ -1,38 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Card from '../Components/Card'
 import { useState } from 'react'
+import { ContextGlobal } from '../Components/utils/global.context';
 
 //Este componente debera ser estilado como "dark" o "light" dependiendo del theme del Context
 
 const Home = () => {
-  const [data,setData] = useState ([]);
+  const [loading, setLoading] = useState(true);
+  const { getUsuarios, handleSetUsers, state } = useContext(ContextGlobal);
 
-  useEffect(() =>{
-  fetch (`https://jsonplaceholder.typicode.com/users`)
-  .then((res) => {return res.json()})
+  useEffect(() => {
+      getUsuarios().then((datos) => {
+          handleSetUsers(datos);
+          setLoading(false);
+      });
+  }, []);
 
-  .then((datos) => {
-    setData(datos) 
-  }) 
-
-  },[]);
-  
-  console.log (data);
   return (
-    <main className="" >
-      <h1>Home</h1>
-      <div className='card-grid'>
-        {
-          data.map((dentist) =>(
-            <Card  id = {dentist.id} name={dentist.name} username={dentist.username}/> 
-          ))
-       }
-
-
-        {/* Aqui deberias renderizar las cards */}
+      <div>
+          <main className="">
+              <h1>Home</h1>
+              <div className="card-grid">
+                  {!loading &&
+                      state.allDestist.map((item) => (
+                          <Card key={item.id} {...item} />
+                      ))}
+              </div>
+          </main>
       </div>
-    </main>
-  )
-}
+  );
+};
 
 export default Home
